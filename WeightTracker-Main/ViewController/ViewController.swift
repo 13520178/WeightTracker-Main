@@ -51,7 +51,7 @@ class ViewController: UIViewController,UICollectionViewDataSource,UICollectionVi
         bannerView.delegate = self
         bannerView.adSize = kGADAdSizeSmartBannerPortrait
         //Thu nghiem
-        bannerView.adUnitID = "ca-app-pub-3940256099942544/2934735716"
+        bannerView.adUnitID = "ca-app-pub-9626752563546060/1275680503"
     
         bannerView.rootViewController = self
         bannerView.load(GADRequest())
@@ -234,24 +234,29 @@ class ViewController: UIViewController,UICollectionViewDataSource,UICollectionVi
                     if indexOfUnitWeight == 0 {
                         cell?.weightUnit = "kg"
                         cell!.startKgLabel.text = String(startKg) + " kg "
-                        cell!.changeKgLabel.text = String(changeKg) + " kg "
+                        cell!.changeKgLabel.text = String(changeKg)
                     }else if indexOfUnitWeight == 1  {
                         cell?.weightUnit = "lbs"
                         cell!.startKgLabel.text = String(startKg) + " lbs "
-                        cell!.changeKgLabel.text = String(changeKg) + " lbs "
+                        cell!.changeKgLabel.text = String(changeKg)
                     }else {
                         cell?.weightUnit = "kg"
                         cell!.startKgLabel.text = String(startKg) + " kg "
-                        cell!.changeKgLabel.text = String(changeKg) + " kg "
+                        cell!.changeKgLabel.text = String(changeKg)
                     }
                    
+                    let datesForWeightTrend = cell!.get7and30DayBefore()
+                    cell!.setWeight7TrendValue(dates: datesForWeightTrend)
+                    cell!.setWeight30TrendValue(dates: datesForWeightTrend)
                     cell!.timeStartLabel.text = cell!.people[0].date
-                    // sum of days
                     
+                    // sum of days
                     cell!.totalDaysLabel.text = String(sumOfDays)
                 }else {
                     cell!.startKgLabel.text = "No record"
-                    cell!.changeKgLabel.text = "No record"
+                    cell!.changeKgLabel.text = "-"
+                    cell!.change7DayLabel.text = "-"
+                    cell!.change30DayLabel.text = "_"
                     cell!.timeStartLabel.text = "No record"
                     cell!.totalDaysLabel.text = "0"
                     
@@ -370,6 +375,8 @@ class ViewController: UIViewController,UICollectionViewDataSource,UICollectionVi
                     
                     cell?.calculateAndShowBMIValue()
                 }
+                
+                cell!.setWeightPrediction()
                 return cell!
                 
             }else {
@@ -427,10 +434,7 @@ class ViewController: UIViewController,UICollectionViewDataSource,UICollectionVi
                 
             }
         }
-        
-        
-        
-        
+
     }
 
 }
@@ -440,6 +444,32 @@ class ViewController: UIViewController,UICollectionViewDataSource,UICollectionVi
 //MARK: Protocol
 
 extension ViewController: ToolCellDelegate {
+    func showPrediction() {
+          AlertController.showAlert(inController: self, tilte: "Weight prediction feature", message: "The more daily weight records will give the correct results. We will start calculating your weight after 2 days of weight recording. Accuracy of weight will affect results. Too much weight change in a day or two can be caused by a change in body water percentage.")
+    }
+    
+    func upgradeToPro() {
+        let alertController = UIAlertController(title: "Upgrade to Pro?", message: "Pro version will remove ads, add new features and be upgraded interface.", preferredStyle: .alert)
+        
+        let okAction = UIAlertAction(title: "Upgrade", style: .default) { (action) in
+            if let url = URL(string: "https://itunes.apple.com/us/app/wechart-pro/id1463270859?mt=8&ign-mpt=uo%3D2"),
+                UIApplication.shared.canOpenURL(url)
+            {
+                if #available(iOS 10.0, *) {
+                    UIApplication.shared.open(url, options: [:], completionHandler: nil)
+                } else {
+                    UIApplication.shared.openURL(url)
+                }
+            }
+        }
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+        
+        alertController.addAction(okAction)
+        alertController.addAction(cancelAction)
+        
+        self.present(alertController, animated: true)
+    }
+    
     func enterDesiredWeight(dWeight: Double) {
         defaults.set(dWeight, forKey: "desizedWeightForHistory")
         collectionView.reloadData()
@@ -520,6 +550,28 @@ extension ViewController: ToolCellDelegate {
 }
 
 extension ViewController: InputWeightCellDelegate {
+    func showUpgradeInTabOne() {
+        let alertController = UIAlertController(title: "Upgrade to Pro?", message: "Pro version will remove ads, add new features and be upgraded interface.", preferredStyle: .alert)
+        
+        let okAction = UIAlertAction(title: "Upgrade", style: .default) { (action) in
+            if let url = URL(string: "https://itunes.apple.com/us/app/wechart-pro/id1463270859?mt=8&ign-mpt=uo%3D2"),
+                UIApplication.shared.canOpenURL(url)
+            {
+                if #available(iOS 10.0, *) {
+                    UIApplication.shared.open(url, options: [:], completionHandler: nil)
+                } else {
+                    UIApplication.shared.openURL(url)
+                }
+            }
+        }
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+        
+        alertController.addAction(okAction)
+        alertController.addAction(cancelAction)
+        
+        self.present(alertController, animated: true)
+    }
+    
     func enableUserInteraction() {
         collectionView.isUserInteractionEnabled = true
         tabCollectionView.isScrollEnabled = true
@@ -555,7 +607,7 @@ extension ViewController: InputWeightCellDelegate {
         
         DispatchQueue.main.async {
             self.collectionView?.selectItem(at: indexPath, animated: true, scrollPosition: .top)
-            
+
         }
         self.collectionView(self.collectionView, didSelectItemAt: indexPath)
         
@@ -617,8 +669,27 @@ extension ViewController: HistoryCellDelegate {
 }
 
 extension ViewController:SetupCellDelegate,MFMailComposeViewControllerDelegate {
-  
-    
+    func showUpgradeView() {
+        let alertController = UIAlertController(title: "Upgrade to Pro?", message: "Pro version will remove ads, add new features and be upgraded interface.", preferredStyle: .alert)
+        
+        let okAction = UIAlertAction(title: "Upgrade", style: .default) { (action) in
+                if let url = URL(string: "https://itunes.apple.com/us/app/wechart-pro/id1463270859?mt=8&ign-mpt=uo%3D2"),
+                    UIApplication.shared.canOpenURL(url)
+            {
+                if #available(iOS 10.0, *) {
+                    UIApplication.shared.open(url, options: [:], completionHandler: nil)
+                } else {
+                    UIApplication.shared.openURL(url)
+                }
+            }
+        }
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+        
+        alertController.addAction(okAction)
+        alertController.addAction(cancelAction)
+        
+        self.present(alertController, animated: true)
+    }
     
     func deleteAllRecords() {
         let alertController = UIAlertController(title: "Delete All Data ?", message: "Do you want to delete all data ?", preferredStyle: .alert)

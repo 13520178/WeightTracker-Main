@@ -16,6 +16,7 @@ protocol InputWeightCellDelegate {
     func checkIfOverInput()
     func disableUserInteraction()
     func enableUserInteraction()
+    func showUpgradeInTabOne()
     func resetData()
     func showSub1()
     func showSub2()
@@ -238,6 +239,7 @@ class InputWeightCell: BaseCell,UIPickerViewDelegate, UIPickerViewDataSource,UIT
     var delegate: InputWeightCellDelegate?
     
     let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
+    let request : NSFetchRequest<Person> = Person.fetchRequest()
     
     
     //MARK: - SubsView Variable
@@ -513,6 +515,7 @@ class InputWeightCell: BaseCell,UIPickerViewDelegate, UIPickerViewDataSource,UIT
     @objc func buttonAction(sender: UIButton!) {
         print("Button tapped")
         
+        
         if inputWeightTextfield.text != ""
         {
             if var w = inputWeightTextfield.text {
@@ -524,9 +527,18 @@ class InputWeightCell: BaseCell,UIPickerViewDelegate, UIPickerViewDataSource,UIT
                         person.date = Date().string(format: "dd-MM-yyyy")
                         person.note = noteTextView.text!
                         person.time = timeArray[pickerSelectedRow]
-                        print(person)
                         savePerson()
+                
+                        var people = [Person]()
+                        do {
+                            try people = self.context.fetch(self.request)
+                        } catch  {
+                            print("Error to fetch Item data")
+                        }
                         
+                        if(people.count >= 4) {
+                            delegate?.showUpgradeInTabOne()
+                        }
                         
                         delegate?.changeAndUpdateCell(didChange: true, person: person)
                     }else {
