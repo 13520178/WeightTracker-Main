@@ -195,6 +195,9 @@ class ViewController: UIViewController,UICollectionViewDataSource,UICollectionVi
                     cell?.kgLabel.text = "kg"
                 }
                 
+                cell?.segmentOfCharts.selectedSegmentIndex = indexOfUnitWeight
+                cell?.heightSegmentOfCharts.selectedSegmentIndex = indexOfUnitHeight
+                
                 return cell!
             }else if indexPath.item == 1 {
                  let cell =  collectionView.dequeueReusableCell(withReuseIdentifier: "DiagramId", for: indexPath) as? DiagramCell
@@ -207,6 +210,8 @@ class ViewController: UIViewController,UICollectionViewDataSource,UICollectionVi
                 if defaults.double(forKey: "desizedWeightForHistory") != 0 {
                     cell?.desiredWeight = defaults.double(forKey: "desizedWeightForHistory")
                 }
+                
+                cell!.delegate = self
                 
                 if  cell != nil , cell!.people.count >= 1 {
                     
@@ -259,6 +264,16 @@ class ViewController: UIViewController,UICollectionViewDataSource,UICollectionVi
                     cell!.change30DayLabel.text = "_"
                     cell!.timeStartLabel.text = "No record"
                     cell!.totalDaysLabel.text = "0"
+                    
+                    cell!.average7DayWeightLabel.text = "Weight: _ \(cell!.weightUnit)/day"
+                    cell!.average7DayCaloriesLabel.text = "Calories: _ cal/day"
+                    cell!.average7DayHeaviestLabel.text = "Heaviest: Upgrade"
+                    cell!.average7DayLightestLabel.text = "Lightest: _ \(cell!.weightUnit)"
+                    
+                    cell!.average30DayWeightLabel.text = "Weight: _ \(cell!.weightUnit)/day"
+                    cell!.average30DayCaloriesLabel.text = "Calories: _ cal/day"
+                    cell!.average30DayHeaviestLabel.text = "Heaviest: Upgrade"
+                    cell!.average30DayLightestLabel.text = "Lightest: _ \(cell!.weightUnit)"
                     
                     let monthss = [""]
                     let unitsSolds = [0.0]
@@ -382,6 +397,8 @@ class ViewController: UIViewController,UICollectionViewDataSource,UICollectionVi
             }else {
                 let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "SetupId", for: indexPath) as? SetupCell
                 cell?.delegate = self
+                cell?.segmentOfCharts.selectedSegmentIndex = indexOfUnitWeight
+                cell?.heightSegmentOfCharts.selectedSegmentIndex = indexOfUnitHeight
                 return cell!
             }
             
@@ -442,6 +459,34 @@ class ViewController: UIViewController,UICollectionViewDataSource,UICollectionVi
 
 
 //MARK: Protocol
+
+extension ViewController: DiagramCellDelegate {
+    func upgradeToProInDiagram() {
+        let alertController = UIAlertController(title: "Upgrade to Pro?", message: "Pro version will remove ads, add new features and be upgraded interface.", preferredStyle: .alert)
+        
+        let okAction = UIAlertAction(title: "Upgrade", style: .default) { (action) in
+            if let url = URL(string: "https://itunes.apple.com/us/app/wechart-pro/id1463270859?mt=8&ign-mpt=uo%3D2"),
+                UIApplication.shared.canOpenURL(url)
+            {
+                if #available(iOS 10.0, *) {
+                    UIApplication.shared.open(url, options: [:], completionHandler: nil)
+                } else {
+                    UIApplication.shared.openURL(url)
+                }
+            }
+        }
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+        
+        alertController.addAction(okAction)
+        alertController.addAction(cancelAction)
+        
+        self.present(alertController, animated: true)
+    }
+    
+    func showDiagramPrediction() {
+        AlertController.showAlert(inController: self, tilte: "Average weight feature", message: "The average value for reference and not specifically reflect your weight loss process.The results will be useful when you reach the corresponding number of days.")
+    }
+}
 
 extension ViewController: ToolCellDelegate {
     func showPrediction() {
@@ -550,6 +595,51 @@ extension ViewController: ToolCellDelegate {
 }
 
 extension ViewController: InputWeightCellDelegate {
+    func setWeightUnitTab1(indexOfWeightUnit: Int) {
+        defaults.set(indexOfWeightUnit, forKey: "indexOfWeightUnit")
+        self.indexOfUnitWeight = defaults.integer(forKey: "indexOfWeightUnit")
+        
+        self.spinner.startAnimating()
+        DispatchQueue.main.async() {
+            var people = [Person]()
+            do {
+                try people = self.context.fetch(self.request)
+            } catch  {
+                print("Error to fetch Item data")
+            }
+            if self.indexOfUnitWeight == 0 {
+                for i in people {
+                    i.weight = i.weight * 0.45359237
+                    i.weight = round(i.weight*100)/100
+                }
+            }else {
+                for i in people {
+                    i.weight = i.weight / 0.45359237
+                    i.weight = round(i.weight*100)/100
+                }
+            }
+            
+            do {
+                try self.context.save()
+            } catch  {
+                print("Error to saving data")
+            }
+            self.spinner.stopAnimating()
+        }
+        
+        
+        self.tabCollectionView.reloadData()
+    }
+    
+    func setHeightUnitTab1(indexOfHeightUnit: Int) {
+        
+        print("May set duoc roi ne")
+        showInputViewInToolCellWhenChangeHeightUnit = true
+        defaults.set(indexOfHeightUnit, forKey: "indexOfHeightUnit")
+        self.indexOfUnitHeight = defaults.integer(forKey: "indexOfHeightUnit")
+        self.tabCollectionView.reloadData()
+    }
+    
     func showUpgradeInTabOne() {
         let alertController = UIAlertController(title: "Upgrade to Pro?", message: "Pro version will remove ads, add new features and be upgraded interface.", preferredStyle: .alert)
         
@@ -791,7 +881,7 @@ extension ViewController:SetupCellDelegate,MFMailComposeViewControllerDelegate {
         mailComposerVC.mailComposeDelegate = self
         
         mailComposerVC.setToRecipients(["phannhatd@gmail.com"])
-        mailComposerVC.setSubject("Question about WeChart 1.1.5")
+        mailComposerVC.setSubject("Question about WeChart 1.2.5")
         mailComposerVC.setMessageBody("", isHTML: false)
         
         return mailComposerVC

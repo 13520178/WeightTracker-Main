@@ -22,9 +22,109 @@ protocol InputWeightCellDelegate {
     func showSub2()
     func showSub3()
     func showSub4()
+    func setWeightUnitTab1(indexOfWeightUnit: Int)
+    func setHeightUnitTab1(indexOfHeightUnit: Int)
 }
 
 class InputWeightCell: BaseCell,UIPickerViewDelegate, UIPickerViewDataSource,UITextFieldDelegate{
+    
+    //MARK: - FIRST SHOW VIEW
+    let showUnitView:UIView = {
+        let v = UIView()
+        v.backgroundColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)
+        return v
+    }()
+    
+    let wellcomeLabel: UILabel = {
+        let label = UILabel()
+        label.text = "Wellcome"
+        label.font = UIFont.systemFont(ofSize:35, weight: UIFont.Weight.bold)
+        label.textColor = #colorLiteral(red: 0.5568627715, green: 0.3529411852, blue: 0.9686274529, alpha: 1)
+        return label
+    }()
+    
+    let introduceLabel: UILabel = {
+        let label = UILabel()
+        label.text = "Please select units and start the journey to change yourself."
+        label.font = UIFont.systemFont(ofSize: 20)
+        label.numberOfLines = 0
+        label.textAlignment = .center
+        label.textColor = #colorLiteral(red: 0.2549019754, green: 0.2745098174, blue: 0.3019607961, alpha: 1)
+        return label
+    }()
+    
+    let weightUnitLabel: UILabel = {
+        let label = UILabel()
+        label.text = "Weight unit"
+        label.font = UIFont.systemFont(ofSize:21, weight: UIFont.Weight.regular)
+        label.textColor = #colorLiteral(red: 0.5568627715, green: 0.3529411852, blue: 0.9686274529, alpha: 1)
+        return label
+    }()
+    
+    let segmentOfCharts:UISegmentedControl = {
+        let sm = UISegmentedControl (items: ["One","Two"])
+        sm.selectedSegmentIndex = 0
+        sm.setTitle("kg", forSegmentAt: 0)
+        sm.setTitle("lbs", forSegmentAt: 1)
+        sm.tintColor = #colorLiteral(red: 0.5320518613, green: 0.2923432589, blue: 1, alpha: 1)
+        return sm
+    }()
+    
+    let heightUnitLabel: UILabel = {
+        let label = UILabel()
+        label.text = "Height unit"
+        label.font = UIFont.systemFont(ofSize:21, weight: UIFont.Weight.regular)
+        label.textColor = #colorLiteral(red: 0.5568627715, green: 0.3529411852, blue: 0.9686274529, alpha: 1)
+        return label
+    }()
+    
+    let heightSegmentOfCharts:UISegmentedControl = {
+        let sm = UISegmentedControl (items: ["One","Two"])
+        sm.selectedSegmentIndex = 0
+        sm.setTitle("cm", forSegmentAt: 0)
+        sm.setTitle("ft", forSegmentAt: 1)
+        sm.tintColor = #colorLiteral(red: 0.5320518613, green: 0.2923432589, blue: 1, alpha: 1)
+        return sm
+    }()
+    
+    let lineFirstView: UIView = {
+        let view = UIView()
+        view.backgroundColor = #colorLiteral(red: 0.8039215803, green: 0.8039215803, blue: 0.8039215803, alpha: 1)
+        return view
+    }()
+    
+    let lineSecondView: UIView = {
+        let view = UIView()
+        view.backgroundColor = #colorLiteral(red: 0.8039215803, green: 0.8039215803, blue: 0.8039215803, alpha: 1)
+        return view
+    }()
+    
+    let lineThirdView: UIView = {
+        let view = UIView()
+        view.backgroundColor = #colorLiteral(red: 0.8039215803, green: 0.8039215803, blue: 0.8039215803, alpha: 1)
+        return view
+    }()
+    
+    let endLabel: UILabel = {
+        let label = UILabel()
+        label.text = "You can always re-select units in the settings"
+        label.font = UIFont.systemFont(ofSize: 20)
+        label.numberOfLines = 0
+        label.textAlignment = .center
+        label.textColor = #colorLiteral(red: 0.2549019754, green: 0.2745098174, blue: 0.3019607961, alpha: 1)
+        return label
+    }()
+    
+    let startButton: UIButton = {
+        let bt = UIButton(type: UIButton.ButtonType.roundedRect)
+        bt.setTitle("Let's go", for: .normal)
+        bt.setTitleColor(#colorLiteral(red: 1, green: 1, blue: 1, alpha: 1), for: .normal)
+        bt.backgroundColor = #colorLiteral(red: 0.5568627715, green: 0.3529411852, blue: 0.9686274529, alpha: 1)
+        bt.titleLabel?.font = UIFont(name:"TrebuchetMS", size: 30)
+        
+        return bt
+    }()
+    
    
     //MARK: - MainView variables
     let inputWeightView:UIView = {
@@ -140,6 +240,7 @@ class InputWeightCell: BaseCell,UIPickerViewDelegate, UIPickerViewDataSource,UIT
         picker.isHidden = false
         return picker
     }()
+    let defaults = UserDefaults.standard
     
     func numberOfComponents(in pickerView: UIPickerView) -> Int {
         return 1
@@ -242,6 +343,10 @@ class InputWeightCell: BaseCell,UIPickerViewDelegate, UIPickerViewDataSource,UIT
     let request : NSFetchRequest<Person> = Person.fetchRequest()
     
     
+    var indexWeightUnit = -1
+    var indexHeightUnit = -1
+    
+    
     //MARK: - SubsView Variable
     let subView1 = InputWeightSubView()
     let subView2 = InputWeightSubView()
@@ -250,6 +355,113 @@ class InputWeightCell: BaseCell,UIPickerViewDelegate, UIPickerViewDataSource,UIT
     
     override func setUpView() {
         super.setUpView()
+        //StartPage
+        showUnitView.addSubview(wellcomeLabel)
+        wellcomeLabel.translatesAutoresizingMaskIntoConstraints = false
+        wellcomeLabel.topAnchor.constraint(equalTo: showUnitView.topAnchor, constant: 14).isActive = true
+        wellcomeLabel.centerXAnchor.constraint(equalTo:  showUnitView.centerXAnchor).isActive = true
+        
+        showUnitView.addSubview(introduceLabel)
+        introduceLabel.translatesAutoresizingMaskIntoConstraints = false
+        introduceLabel.topAnchor.constraint(equalTo: wellcomeLabel.bottomAnchor, constant: 12).isActive = true
+        introduceLabel.leadingAnchor.constraint(equalTo: showUnitView.leadingAnchor, constant: 8).isActive = true
+        introduceLabel.trailingAnchor.constraint(equalTo: showUnitView.trailingAnchor, constant: -8).isActive = true
+        introduceLabel.centerXAnchor.constraint(equalTo:  showUnitView.centerXAnchor).isActive = true
+        
+        showUnitView.addSubview(lineFirstView)
+        lineFirstView.translatesAutoresizingMaskIntoConstraints = false
+        lineFirstView.topAnchor.constraint(equalTo: introduceLabel.bottomAnchor, constant: 30.0).isActive = true
+        lineFirstView.centerXAnchor.constraint(equalTo: showUnitView.centerXAnchor).isActive = true
+        lineFirstView.heightAnchor.constraint(equalToConstant: 1.0).isActive = true
+        lineFirstView.widthAnchor.constraint(equalToConstant: self.layer.frame.width - 32).isActive = true
+        
+        showUnitView.addSubview(weightUnitLabel)
+        weightUnitLabel.translatesAutoresizingMaskIntoConstraints = false
+        weightUnitLabel.topAnchor.constraint(equalTo: introduceLabel.bottomAnchor, constant: 45).isActive = true
+        weightUnitLabel.leadingAnchor.constraint(equalTo: showUnitView.leadingAnchor, constant: 8).isActive = true
+        
+        showUnitView.addSubview(segmentOfCharts)
+        segmentOfCharts.translatesAutoresizingMaskIntoConstraints = false
+        segmentOfCharts.topAnchor.constraint(equalTo: introduceLabel.bottomAnchor, constant: 42).isActive = true
+        segmentOfCharts.trailingAnchor.constraint(equalTo: showUnitView.trailingAnchor, constant: -8).isActive = true
+        segmentOfCharts.heightAnchor.constraint(equalToConstant: 30).isActive = true
+        segmentOfCharts.widthAnchor.constraint(equalToConstant: 80).isActive = true
+        segmentOfCharts.addTarget(self, action: #selector(segmentedValueChanged(_:)), for: .valueChanged)
+        
+        
+        showUnitView.addSubview(lineSecondView)
+        lineSecondView.translatesAutoresizingMaskIntoConstraints = false
+        lineSecondView.topAnchor.constraint(equalTo: segmentOfCharts.bottomAnchor, constant: 12.0).isActive = true
+        lineSecondView.centerXAnchor.constraint(equalTo: showUnitView.centerXAnchor).isActive = true
+        lineSecondView.heightAnchor.constraint(equalToConstant: 1.0).isActive = true
+        lineSecondView.widthAnchor.constraint(equalToConstant: self.layer.frame.width - 82).isActive = true
+        
+        showUnitView.addSubview(heightUnitLabel)
+        heightUnitLabel.translatesAutoresizingMaskIntoConstraints = false
+        heightUnitLabel.topAnchor.constraint(equalTo: segmentOfCharts.bottomAnchor, constant: 27).isActive = true
+        heightUnitLabel.leadingAnchor.constraint(equalTo: showUnitView.leadingAnchor, constant: 8).isActive = true
+        
+        showUnitView.addSubview(heightSegmentOfCharts)
+        heightSegmentOfCharts.translatesAutoresizingMaskIntoConstraints = false
+        heightSegmentOfCharts.topAnchor.constraint(equalTo: segmentOfCharts.bottomAnchor, constant: 24).isActive = true
+        heightSegmentOfCharts.trailingAnchor.constraint(equalTo: showUnitView.trailingAnchor, constant: -8).isActive = true
+        heightSegmentOfCharts.heightAnchor.constraint(equalToConstant: 30).isActive = true
+        heightSegmentOfCharts.widthAnchor.constraint(equalToConstant: 80).isActive = true
+        heightSegmentOfCharts.addTarget(self, action: #selector(heightSegmentedValueChanged(_:)), for: .valueChanged)
+
+        showUnitView.addSubview(lineThirdView)
+        lineThirdView.translatesAutoresizingMaskIntoConstraints = false
+        lineThirdView.topAnchor.constraint(equalTo: heightSegmentOfCharts.bottomAnchor, constant: 12.0).isActive = true
+        lineThirdView.centerXAnchor.constraint(equalTo: showUnitView.centerXAnchor).isActive = true
+        lineThirdView.heightAnchor.constraint(equalToConstant: 1.0).isActive = true
+        lineThirdView.widthAnchor.constraint(equalToConstant: self.layer.frame.width - 32).isActive = true
+        
+        showUnitView.addSubview(endLabel)
+        endLabel.translatesAutoresizingMaskIntoConstraints = false
+        endLabel.topAnchor.constraint(equalTo: lineThirdView.bottomAnchor, constant: 30).isActive = true
+        endLabel.leadingAnchor.constraint(equalTo: showUnitView.leadingAnchor, constant: 8).isActive = true
+        endLabel.trailingAnchor.constraint(equalTo: showUnitView.trailingAnchor, constant: -8).isActive = true
+        endLabel.centerXAnchor.constraint(equalTo:  showUnitView.centerXAnchor).isActive = true
+        
+        showUnitView.addSubview(startButton)
+        startButton.translatesAutoresizingMaskIntoConstraints = false
+        
+        startButton.bottomAnchor.constraint(equalTo: showUnitView.bottomAnchor, constant: 0).isActive = true
+        startButton.leadingAnchor.constraint(equalTo: showUnitView.leadingAnchor, constant: 0).isActive = true
+        startButton.trailingAnchor.constraint(equalTo: showUnitView.trailingAnchor, constant: 0).isActive = true
+        startButton.heightAnchor.constraint(equalToConstant: 45).isActive = true
+        startButton.addTarget(self, action: #selector(startAction), for: .touchUpInside)
+        
+        if defaults.integer(forKey: "indexWeightUnit") == 0 {
+            segmentOfCharts.selectedSegmentIndex = 0
+        }else if defaults.integer(forKey: "indexWeightUnit") == 1  {
+            segmentOfCharts.selectedSegmentIndex = 1
+        }else {
+            segmentOfCharts.selectedSegmentIndex = 0
+        }
+        
+        if defaults.integer(forKey: "indexHeightUnit") == 0 {
+            heightSegmentOfCharts.selectedSegmentIndex = 0
+        }else if defaults.integer(forKey: "indexHeightUnit") == 1  {
+            heightSegmentOfCharts.selectedSegmentIndex = 1
+        }else {
+            heightSegmentOfCharts.selectedSegmentIndex = 0
+        }
+        
+        if !defaults.bool(forKey: "disableStartPage") {
+            inputWeightView.isHidden = true
+            resetButton.isHidden = true
+            enterButton.isHidden = true
+            imageBelowEnterButton.isHidden = true
+            showUnitView.isHidden = false
+        }else {
+            inputWeightView.isHidden = false
+            resetButton.isHidden = false
+            enterButton.isHidden = false
+            imageBelowEnterButton.isHidden = false
+            showUnitView.isHidden = true
+        }
+        
         // add image to Detail View
         let backgroundImage = UIImage(named: "toolCellBackground")
         let backgroundView = UIImageView(image: backgroundImage)
@@ -278,6 +490,11 @@ class InputWeightCell: BaseCell,UIPickerViewDelegate, UIPickerViewDataSource,UIT
         inputWeightView.layer.borderColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)
         inputWeightView.layer.masksToBounds = true
         
+        showUnitView.layer.cornerRadius = 15.0
+        showUnitView.layer.borderWidth = 1.5
+        showUnitView.layer.borderColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)
+        showUnitView.layer.masksToBounds = true
+        
         
         let selfWidth = self.layer.frame.width
         let selfHeight = self.layer.frame.height
@@ -288,6 +505,13 @@ class InputWeightCell: BaseCell,UIPickerViewDelegate, UIPickerViewDataSource,UIT
         inputWeightView.widthAnchor.constraint(equalToConstant: selfWidth - 40).isActive = true
         inputWeightView.heightAnchor.constraint(equalToConstant: 315.0).isActive = true
         
+        addSubview(showUnitView)
+        showUnitView.translatesAutoresizingMaskIntoConstraints = false
+        showUnitView.centerXAnchor.constraint(equalTo: self.centerXAnchor).isActive = true
+        showUnitView.topAnchor.constraint(equalTo: self.topAnchor, constant: (selfHeight-420)/2).isActive = true
+        showUnitView.widthAnchor.constraint(equalToConstant: selfWidth - 20).isActive = true
+        showUnitView.heightAnchor.constraint(equalToConstant: 400.0).isActive = true
+        
         inputWeightView.addSubview(inputWeightTextfield)
         inputWeightTextfield.translatesAutoresizingMaskIntoConstraints = false
         inputWeightTextfield.centerXAnchor.constraint(equalTo: inputWeightView.centerXAnchor).isActive = true
@@ -295,31 +519,33 @@ class InputWeightCell: BaseCell,UIPickerViewDelegate, UIPickerViewDataSource,UIT
         inputWeightTextfield.widthAnchor.constraint(equalToConstant: selfWidth - 100).isActive = true
         inputWeightTextfield.heightAnchor.constraint(equalToConstant: 40.0).isActive = true
         
+        
+        
         let trailingTextField = (self.layer.frame.width - 240.0)/(-2)
         print(trailingTextField)
-        addSubview(kgLabel)
+        inputWeightView.addSubview(kgLabel)
         kgLabel.translatesAutoresizingMaskIntoConstraints = false
         kgLabel.topAnchor.constraint(equalTo: inputWeightTextfield.bottomAnchor, constant: 8).isActive = true
         kgLabel.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: trailingTextField).isActive = true
         
-        addSubview(noteLabel)
+        inputWeightView.addSubview(noteLabel)
         noteLabel.translatesAutoresizingMaskIntoConstraints = false
         noteLabel.topAnchor.constraint(equalTo: kgLabel.bottomAnchor, constant: 4).isActive = true
         noteLabel.leadingAnchor.constraint(equalTo: self.leadingAnchor,constant: 50 ).isActive = true
         
-        addSubview(noteTextView)
+        inputWeightView.addSubview(noteTextView)
         noteTextView.translatesAutoresizingMaskIntoConstraints = false
         noteTextView.topAnchor.constraint(equalTo: noteLabel.bottomAnchor, constant: 0).isActive = true
         noteTextView.centerXAnchor.constraint(equalTo: inputWeightView.centerXAnchor).isActive = true
         noteTextView.widthAnchor.constraint(equalToConstant: selfWidth - 100).isActive = true
         noteTextView.heightAnchor.constraint(equalToConstant: 90.0).isActive = true
         
-        addSubview(timeLabel)
+        inputWeightView.addSubview(timeLabel)
         timeLabel.translatesAutoresizingMaskIntoConstraints = false
         timeLabel.topAnchor.constraint(equalTo: noteTextView.bottomAnchor, constant: 40).isActive = true
         timeLabel.leadingAnchor.constraint(equalTo: self.leadingAnchor,constant: 50 ).isActive = true
         
-        addSubview(timePicker)
+        inputWeightView.addSubview(timePicker)
         timePicker.translatesAutoresizingMaskIntoConstraints = false
         timePicker.topAnchor.constraint(equalTo: noteTextView.bottomAnchor, constant: 7).isActive = true
         timePicker.leadingAnchor.constraint(equalTo: self.leadingAnchor,constant: 100 ).isActive = true
@@ -512,6 +738,15 @@ class InputWeightCell: BaseCell,UIPickerViewDelegate, UIPickerViewDataSource,UIT
        
     }
     
+    @objc func startAction(sender: UIButton!) {
+        inputWeightView.isHidden = false
+        resetButton.isHidden = false
+        enterButton.isHidden = false
+        imageBelowEnterButton.isHidden = false
+        showUnitView.isHidden = true
+        defaults.set(true, forKey: "disableStartPage")
+    }
+    
     @objc func buttonAction(sender: UIButton!) {
         print("Button tapped")
         
@@ -528,6 +763,118 @@ class InputWeightCell: BaseCell,UIPickerViewDelegate, UIPickerViewDataSource,UIT
                         person.note = noteTextView.text!
                         person.time = timeArray[pickerSelectedRow]
                         savePerson()
+                        
+//                                                let person1 = Person(context: context)
+//                                                person1.weight = 80
+//                                                person1.date = "06-04-2019"
+//                                                person1.note = ""
+//                                                person1.time = timeArray[pickerSelectedRow]
+//                                                savePerson()
+//                        
+//                                                let person2 = Person(context: context)
+//                                                person2.weight = 79.5
+//                                                person2.date = "07-04-2019"
+//                                                person2.note = ""
+//                                                person2.time = timeArray[pickerSelectedRow]
+//                                                savePerson()
+//                        
+//                                                let person3 = Person(context: context)
+//                                                person3.weight = 79.3
+//                                                person3.date = "08-04-2019"
+//                                                person3.note = ""
+//                                                person3.time = timeArray[pickerSelectedRow]
+//                                                savePerson()
+//                        
+//                                                let person4 = Person(context: context)
+//                                                person4.weight = 79
+//                                                person4.date = "09-04-2019"
+//                                                person4.note = ""
+//                                                person4.time = timeArray[pickerSelectedRow]
+//                                                savePerson()
+//                        
+//                                                let person5 = Person(context: context)
+//                                                person5.weight = 78.5
+//                                                person5.date = "10-04-2019"
+//                                                person5.note = ""
+//                                                person5.time = timeArray[pickerSelectedRow]
+//                                                savePerson()
+//                        
+//                                                let person6 = Person(context: context)
+//                                                person6.weight = 78
+//                                                person6.date = "11-04-2019"
+//                                                person6.note = ""
+//                                                person6.time = timeArray[pickerSelectedRow]
+//                                                savePerson()
+//                        
+//                                                let person7 = Person(context: context)
+//                                                person7.weight = 77.6
+//                                                person7.date = "12-04-2019"
+//                                                person7.note = ""
+//                                                person7.time = timeArray[pickerSelectedRow]
+//                                                savePerson()
+//                        
+//                                                let person8 = Person(context: context)
+//                                                person8.weight = 77.2
+//                                                person8.date = "13-04-2019"
+//                                                person8.note = ""
+//                                                person8.time = timeArray[pickerSelectedRow]
+//                                                savePerson()
+//                        
+//                                                let person9 = Person(context: context)
+//                                                person9.weight = 70
+//                                                person9.date = "01-05-2019"
+//                                                person9.note = ""
+//                                                person9.time = timeArray[pickerSelectedRow]
+//                                                savePerson()
+//                        
+//                                                let person10 = Person(context: context)
+//                                                person10.weight = 69.5
+//                                                person10.date = "02-05-2019"
+//                                                person10.note = ""
+//                                                person10.time = timeArray[pickerSelectedRow]
+//                                                savePerson()
+//                        
+//                                                let person11 = Person(context: context)
+//                                                person11.weight = 69.4
+//                                                person11.date = "03-05-2019"
+//                                                person11.note = ""
+//                                                person11.time = timeArray[pickerSelectedRow]
+//                                                savePerson()
+//                        
+//                                                let person12 = Person(context: context)
+//                                                person12.weight = 69.6
+//                                                person12.date = "04-05-2019"
+//                                                person12.note = ""
+//                                                person12.time = timeArray[pickerSelectedRow]
+//                                                savePerson()
+//                        
+//                                                let person13 = Person(context: context)
+//                                                person13.weight = 69
+//                                                person13.date = "05-05-2019"
+//                                                person13.note = ""
+//                                                person13.time = timeArray[pickerSelectedRow]
+//                                                savePerson()
+//                        
+//                                                let person14 = Person(context: context)
+//                                                person14.weight = 68
+//                                                person14.date = "06-05-2019"
+//                                                person14.note = ""
+//                                                person14.time = timeArray[pickerSelectedRow]
+//                                                savePerson()
+//                        
+//                                                let person15 = Person(context: context)
+//                                                person15.weight = 68.4
+//                                                person15.date = "07-05-2019"
+//                                                person15.note = ""
+//                                                person15.time = timeArray[pickerSelectedRow]
+//                                                savePerson()
+//                        
+//                                                let person16 = Person(context: context)
+//                                                person16.weight = 67.9
+//                                                person16.date = "08-05-2019"
+//                                                person16.note = ""
+//                                                person16.time = timeArray[pickerSelectedRow]
+//                                                savePerson()
                 
                         var people = [Person]()
                         do {
@@ -561,6 +908,33 @@ class InputWeightCell: BaseCell,UIPickerViewDelegate, UIPickerViewDataSource,UIT
         } catch  {
             print("Error to saving data")
         }
+    }
+    
+    @objc func segmentedValueChanged(_ sender:UISegmentedControl!){
+        print("Selected Segment Index is : \(sender.selectedSegmentIndex)")
+        if sender.selectedSegmentIndex == 0 {
+            defaults.set(0, forKey: "indexWeightUnit")
+            indexWeightUnit = 0
+        }else {
+            defaults.set(1, forKey: "indexWeightUnit")
+            indexWeightUnit = 1
+        }
+        
+        delegate?.setWeightUnitTab1(indexOfWeightUnit: sender.selectedSegmentIndex)
+        
+    }
+    
+    @objc func heightSegmentedValueChanged(_ sender:UISegmentedControl!) {
+        if sender.selectedSegmentIndex == 0 {
+            defaults.set(0, forKey: "indexHeightUnit")
+            indexHeightUnit = 0
+        }else {
+            defaults.set(1, forKey: "indexHeightUnit")
+            indexHeightUnit = 1
+        }
+        
+        delegate?.setHeightUnitTab1(indexOfHeightUnit: sender.selectedSegmentIndex)
+        print(heightSegmentOfCharts.selectedSegmentIndex)
     }
 
 }

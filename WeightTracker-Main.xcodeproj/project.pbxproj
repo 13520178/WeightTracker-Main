@@ -94,9 +94,8 @@
 			isa = PBXGroup;
 			children = (
 				1B11F4DF221995890000D9CD /* Cells Custom */,
-				1B11F4BC2219199E0000D9CD /* AppDelegate.swift */,
 				1BE2E5D9223CDA530027EE1B /* ViewController */,
-				1B81304022262AA00057ABC4 /* AlertController.swift */,
+				1B11F4BC2219199E0000D9CD /* AppDelegate.swift */,
 				1B11F4C02219199E0000D9CD /* Main.storyboard */,
 				1B11F4C6221919A00000D9CD /* Assets.xcassets */,
 				1B11F4C8221919A00000D9CD /* LaunchScreen.storyboard */,
@@ -137,6 +136,7 @@
 		1BE2E5D9223CDA530027EE1B /* ViewController */ = {
 			isa = PBXGroup;
 			children = (
+				1B81304022262AA00057ABC4 /* AlertController.swift */,
 				1B11F4BE2219199E0000D9CD /* ViewController.swift */,
 				1BE2E5D7223CD38B0027EE1B /* HistoryDetailVC.swift */,
 			);

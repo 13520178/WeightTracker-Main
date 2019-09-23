@@ -72,15 +72,14 @@ class SetupCell: BaseCell,MFMailComposeViewControllerDelegate {
         button.imageView?.contentMode = UIView.ContentMode.scaleAspectFit
         button.setImage(fbImage, for: UIControl.State.normal)
         button.layer.cornerRadius = 16
-        button.layer.borderWidth = 1
-        button.layer.borderColor = #colorLiteral(red: 0.5320518613, green: 0.2923432589, blue: 1, alpha: 1)
+
         button.clipsToBounds = true
         return button
     }()
     
-    let weChartProButton: UIButton = {
+    let shoppingListButton: UIButton = {
         let button = UIButton()
-        let fbImage = UIImage(named: "weChartPro")
+        let fbImage = UIImage(named: "shoppingList")
         button.imageView?.contentMode = UIView.ContentMode.scaleAspectFit
         button.setImage(fbImage, for: UIControl.State.normal)
         button.layer.cornerRadius = 16
@@ -142,7 +141,7 @@ class SetupCell: BaseCell,MFMailComposeViewControllerDelegate {
         return view
     }()
     
-    let weChartProView: UIView = {
+    let shoppingListView: UIView = {
         let view = UIView()
         view.backgroundColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)
         return view
@@ -158,7 +157,7 @@ class SetupCell: BaseCell,MFMailComposeViewControllerDelegate {
     
     let appVersionLabel: UILabel = {
         let label = UILabel()
-        label.text = "Version: 1.2.3"
+        label.text = "Version: 1.2.8"
         label.font = UIFont.systemFont(ofSize:13, weight: UIFont.Weight.light)
         label.textColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)
         return label
@@ -182,7 +181,7 @@ class SetupCell: BaseCell,MFMailComposeViewControllerDelegate {
     
     let contactUsLabel: UILabel = {
         let label = UILabel()
-        label.text = "Contact me"
+        label.text = "Contact us"
         label.font = UIFont.systemFont(ofSize:20, weight: UIFont.Weight.medium)
         label.textColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)
         return label
@@ -190,7 +189,7 @@ class SetupCell: BaseCell,MFMailComposeViewControllerDelegate {
     
     let otherAppLabel: UILabel = {
         let label = UILabel()
-        label.text = "My other apps"
+        label.text = "Our other apps"
         label.font = UIFont.systemFont(ofSize:20, weight: UIFont.Weight.medium)
         label.textColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)
         return label
@@ -198,9 +197,9 @@ class SetupCell: BaseCell,MFMailComposeViewControllerDelegate {
     
     let savingMoneyLabel: UILabel = {
         let label = UILabel()
-        label.text = "Saving Money SV"
+        label.text = "Saving Money"
         label.font = UIFont.systemFont(ofSize:16, weight: UIFont.Weight.medium)
-        label.textColor = #colorLiteral(red: 0.501960814, green: 0.501960814, blue: 0.501960814, alpha: 1)
+        label.textColor = #colorLiteral(red: 0.2392156869, green: 0.6745098233, blue: 0.9686274529, alpha: 1)
         return label
     }()
     let savingMoneyDetailLabel: UILabel = {
@@ -224,11 +223,19 @@ class SetupCell: BaseCell,MFMailComposeViewControllerDelegate {
         upgradeView.image = UIImage(named: "upgrade")
         return upgradeView
     }()
-    let weChartProLabel: UILabel = {
+    let shoppingLabel: UILabel = {
         let label = UILabel()
-        label.text = "WeChart Pro"
+        label.text = "Shopping List"
         label.font = UIFont.systemFont(ofSize:16, weight: UIFont.Weight.medium)
-        label.textColor = #colorLiteral(red: 0.5568627715, green: 0.3529411852, blue: 0.9686274529, alpha: 1)
+        label.textColor = #colorLiteral(red: 0.2392156869, green: 0.6745098233, blue: 0.9686274529, alpha: 1)
+        return label
+    }()
+    
+    let shoppingDetailLabel: UILabel = {
+        let label = UILabel()
+        label.text = "Go to the store with an available plan"
+        label.font = UIFont.systemFont(ofSize:13, weight: UIFont.Weight.light)
+        label.textColor = #colorLiteral(red: 0.6000000238, green: 0.6000000238, blue: 0.6000000238, alpha: 1)
         return label
     }()
     
@@ -279,6 +286,7 @@ class SetupCell: BaseCell,MFMailComposeViewControllerDelegate {
         return btn
     }()
     
+    
     //MARK: - setUpView()
     override func setUpView() {
         super.setUpView()
@@ -305,8 +313,8 @@ class SetupCell: BaseCell,MFMailComposeViewControllerDelegate {
         let upgradeTap = UITapGestureRecognizer(target: self, action: #selector(upgradeProAction))
         upgradeView.addGestureRecognizer(upgradeTap)
         
-        let weChartProTap = UITapGestureRecognizer(target: self, action: #selector(upgradeProAction))
-        weChartProView.addGestureRecognizer(weChartProTap)
+        let openShoppingList = UITapGestureRecognizer(target: self, action: #selector(openShoppingListApp))
+        shoppingListView.addGestureRecognizer(openShoppingList)
         
 
     }
@@ -512,25 +520,30 @@ class SetupCell: BaseCell,MFMailComposeViewControllerDelegate {
         lineAboveWeChartProView.widthAnchor.constraint(equalToConstant: self.layer.frame.width ).isActive = true
         lineAboveWeChartProView.heightAnchor.constraint(equalToConstant: 1 ).isActive = true
         
-        mainView.addSubview(weChartProView)
-        weChartProView.translatesAutoresizingMaskIntoConstraints = false
-        weChartProView.topAnchor.constraint(equalTo: otherAppView.topAnchor , constant: 76).isActive = true
-        weChartProView.centerXAnchor.constraint(equalTo: otherAppView.centerXAnchor).isActive = true
-        weChartProView.widthAnchor.constraint(equalToConstant: self.layer.frame.width ).isActive = true
-        weChartProView.heightAnchor.constraint(equalToConstant: 75 ).isActive = true
+        mainView.addSubview(shoppingListView)
+        shoppingListView.translatesAutoresizingMaskIntoConstraints = false
+        shoppingListView.topAnchor.constraint(equalTo: otherAppView.topAnchor , constant: 76).isActive = true
+        shoppingListView.centerXAnchor.constraint(equalTo: otherAppView.centerXAnchor).isActive = true
+        shoppingListView.widthAnchor.constraint(equalToConstant: self.layer.frame.width ).isActive = true
+        shoppingListView.heightAnchor.constraint(equalToConstant: 75 ).isActive = true
         
-        weChartProView.addSubview(weChartProButton)
-        weChartProButton.translatesAutoresizingMaskIntoConstraints = false
-        weChartProButton.topAnchor.constraint(equalTo: weChartProView.topAnchor , constant: 6).isActive = true
-        weChartProButton.leadingAnchor.constraint(equalTo: weChartProView.leadingAnchor, constant: 16).isActive = true
-        weChartProButton.heightAnchor.constraint(equalToConstant: 64.0).isActive = true
-        weChartProButton.widthAnchor.constraint(equalToConstant: 64.0).isActive = true
-        weChartProButton.addTarget(self, action: #selector(upgradeProAction), for: .touchUpInside)
+        shoppingListView.addSubview(shoppingListButton)
+        shoppingListButton.translatesAutoresizingMaskIntoConstraints = false
+        shoppingListButton.topAnchor.constraint(equalTo: shoppingListView.topAnchor , constant: 6).isActive = true
+        shoppingListButton.leadingAnchor.constraint(equalTo: shoppingListView.leadingAnchor, constant: 16).isActive = true
+        shoppingListButton.heightAnchor.constraint(equalToConstant: 64.0).isActive = true
+        shoppingListButton.widthAnchor.constraint(equalToConstant: 64.0).isActive = true
+        shoppingListButton.addTarget(self, action: #selector(openShoppingListApp), for: .touchUpInside)
         
-        weChartProView.addSubview(weChartProLabel)
-        weChartProLabel.translatesAutoresizingMaskIntoConstraints = false
-        weChartProLabel.centerYAnchor.constraint(equalTo: weChartProView.centerYAnchor).isActive = true
-        weChartProLabel.leadingAnchor.constraint(equalTo: weChartProView.leadingAnchor, constant: 100).isActive = true
+        shoppingListView.addSubview(shoppingLabel)
+        shoppingLabel.translatesAutoresizingMaskIntoConstraints = false
+        shoppingLabel.topAnchor.constraint(equalTo: shoppingListView.topAnchor , constant: 16).isActive = true
+        shoppingLabel.leadingAnchor.constraint(equalTo: shoppingListView.leadingAnchor, constant: 100).isActive = true
+        
+        shoppingListView.addSubview(shoppingDetailLabel)
+        shoppingDetailLabel.translatesAutoresizingMaskIntoConstraints = false
+        shoppingDetailLabel.topAnchor.constraint(equalTo: shoppingLabel.bottomAnchor , constant: 4).isActive = true
+        shoppingDetailLabel.leadingAnchor.constraint(equalTo: shoppingListView.leadingAnchor, constant: 100).isActive = true
         
         //Contact us StackView
         let facebookView = UIView()
@@ -574,6 +587,19 @@ class SetupCell: BaseCell,MFMailComposeViewControllerDelegate {
    
     @objc func openSavingMoneySVApp() {
         if let url = URL(string: "https://itunes.apple.com/us/app/saving-money-sv/id1437390099?l=vi&mt=8&fbclid=IwAR03K9tS0qYDVX9BV5cGLzKgZJn4zg71Xi6KMmWX5_aG-WesCq_4ASJp7CU"),
+            UIApplication.shared.canOpenURL(url)
+        {
+            if #available(iOS 10.0, *) {
+                UIApplication.shared.open(url, options: [:], completionHandler: nil)
+            } else {
+                UIApplication.shared.openURL(url)
+            }
+        }
+    }
+    
+    
+    @objc func openShoppingListApp() {
+        if let url = URL(string: "https://apps.apple.com/us/app/moms-shopping-list-items/id1477000933?ign-mpt=uo%3D2"),
             UIApplication.shared.canOpenURL(url)
         {
             if #available(iOS 10.0, *) {

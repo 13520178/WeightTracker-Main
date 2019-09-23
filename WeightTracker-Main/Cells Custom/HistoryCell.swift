@@ -525,6 +525,12 @@ class HistoryCell: BaseCell, UITableViewDelegate, UITableViewDataSource,UIPicker
             cell.timeLabel.text = "N"
             cell.timeLabel.textColor = #colorLiteral(red: 0.2196078449, green: 0.007843137719, blue: 0.8549019694, alpha: 1)
         }
+        
+        if filterPeople[max - indexPath.row].note! != "" {
+            cell.noteImageView.isHidden = false
+        }else {
+            cell.noteImageView.isHidden = true
+        }
         return cell
     }
     
@@ -576,6 +582,13 @@ class MyCell:UITableViewCell {
         return view
     }()
     
+    var noteImageView:UIImageView = {
+        var view = UIImageView()
+        let image = UIImage(named: "note")
+        view.image = image
+        return view
+    }()
+    
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -610,7 +623,7 @@ class MyCell:UITableViewCell {
         addSubview(weightLabel)
         weightLabel.translatesAutoresizingMaskIntoConstraints = false
         weightLabel.topAnchor.constraint(equalTo: weightLabelView.topAnchor, constant: 5.0).isActive = true
-        weightLabel.trailingAnchor.constraint(equalTo: weightLabelView.trailingAnchor, constant: -60).isActive = true
+        weightLabel.trailingAnchor.constraint(equalTo: weightLabelView.trailingAnchor, constant: -75).isActive = true
         
 
         addSubview(timeLabel)
@@ -618,10 +631,19 @@ class MyCell:UITableViewCell {
         timeLabel.topAnchor.constraint(equalTo: weightTitleLabelView.topAnchor, constant: 4.0).isActive = true
         timeLabel.leadingAnchor.constraint(equalTo: dateLabel.trailingAnchor, constant: 5.0).isActive = true
         
+        
+        
         addSubview(showDetailLabel)
         showDetailLabel.translatesAutoresizingMaskIntoConstraints = false
         showDetailLabel.topAnchor.constraint(equalTo: weightLabelView.topAnchor, constant: -5.0).isActive = true
         showDetailLabel.trailingAnchor.constraint(equalTo: weightLabelView.trailingAnchor, constant: -10).isActive = true
+        
+        addSubview(noteImageView)
+        noteImageView.translatesAutoresizingMaskIntoConstraints = false
+        noteImageView.topAnchor.constraint(equalTo: weightTitleLabelView.topAnchor, constant: 5.0).isActive = true
+        noteImageView.trailingAnchor.constraint(equalTo: showDetailLabel.leadingAnchor, constant: -2.0).isActive = true
+        noteImageView.widthAnchor.constraint(equalToConstant: 20).isActive = true
+        noteImageView.heightAnchor.constraint(equalToConstant: 20).isActive = true
         
         addSubview(lineView)
         lineView.translatesAutoresizingMaskIntoConstraints = false
