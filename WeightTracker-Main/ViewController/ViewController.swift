@@ -389,6 +389,7 @@ class ViewController: UIViewController,UICollectionViewDataSource,UICollectionVi
                 }else {
                     
                     cell?.calculateAndShowBMIValue()
+                    
                 }
                 
                 cell!.setWeightPrediction()
@@ -521,46 +522,21 @@ extension ViewController: ToolCellDelegate {
         tabCollectionView.reloadData()
     }
     
-    func enterInitialWeight() {
-        let alertController = UIAlertController(title: "Initial weight settings", message: "Enter the initial weight you want to edit ", preferredStyle: .alert)
-        
-        alertController.addTextField(configurationHandler: exchangeTF)
+    func enterInitialWeight(people:[Person]) {
+ 
+        let alertController = UIAlertController(title: "Set initial weight", message: "Do you want to set your initial weight to your nearest weight?", preferredStyle: .alert)
         
         let okAction = UIAlertAction(title: "OK", style: .default) { (action) in
-            if let w = self.exchangeTF.text {
-                if let w = Float(w) {
-                    if w > 1 && w <= 400 {
-                        if let result = try? self.context.fetch(self.request) {
-                            result.first?.weight = w
-                        }
-                        do {
-                            try self.context.save()
-                            let indexPath = IndexPath(row: 3, section: 0)
-                            DispatchQueue.main.async {
-                                self.collectionView.selectItem(at: indexPath, animated: true, scrollPosition: .top)
-                            }
-                            
-                            self.collectionView.reloadData()
-                            self.tabCollectionView.reloadData()
-                        } catch {
-                            print("Co xoa duoc dau ma xoa")
-                        }
-                    }else {
-                        self.checkIfOverInput()
-                    }
-                }else {
-                    self.checkIfWrongInputToolCell()
-                }
-            }else {
-                self.checkIfWrongInputToolCell()
-            }
+            self.defaults.set(people.last?.weight, forKey: "initWeight")
+            self.collectionView.reloadData()
+            self.tabCollectionView.reloadData()
         }
         let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
         
         alertController.addAction(okAction)
         alertController.addAction(cancelAction)
         
-         self.present(alertController, animated: true)
+        self.present(alertController, animated: true)
     }
     
     

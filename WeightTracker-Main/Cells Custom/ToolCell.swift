@@ -13,7 +13,7 @@ import CoreData
 protocol ToolCellDelegate {
     func checkIfWrongInputToolCell()
     func enterWeightFirst()
-    func enterInitialWeight()
+    func enterInitialWeight(people:[Person])
     func enterDesiredWeight(dWeight:Double)
     func upgradeToPro()
     func showPrediction()
@@ -660,6 +660,13 @@ class ToolCell: BaseCell,UITextFieldDelegate {
             print("Error to fetch Item data")
         }
         
+        if defaults.float(forKey: "initWeight") == 0 {
+            if people.count != 0{
+                defaults.set(people.first?.weight, forKey: "initWeight")
+            }
+            
+        }
+        
         let tap: UITapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
         self.addGestureRecognizer(tap)
         
@@ -789,7 +796,7 @@ class ToolCell: BaseCell,UITextFieldDelegate {
     }
     
     @objc func seInitialWeight() {
-        delegate?.enterInitialWeight()
+        delegate?.enterInitialWeight(people: people)
     }
     
     //MARK: - Setup Prediction Weight
@@ -1341,6 +1348,13 @@ class ToolCell: BaseCell,UITextFieldDelegate {
         let ftHeight =  defaults.integer(forKey: "ftHeight")
         let inHeight =  defaults.double(forKey: "inHeight")
         
+        if defaults.float(forKey: "initWeight") == 0 {
+            if people.count != 0{
+                defaults.set(people.first?.weight, forKey: "initWeight")
+            }
+            
+        }
+        
         if var  weight = weight {
             weight = round(weight*100)/100
             var height2 = (height*height)/10000
@@ -1411,7 +1425,8 @@ class ToolCell: BaseCell,UITextFieldDelegate {
             currentWeightlabel.text = "Current weight: \(weight) \(weightUnit)"
 
             targetWeightlabel.text = "\(targetWeight) \(weightUnit)"
-            if let iw = people.first?.weight {
+            if (people.first?.weight) != nil {
+                let iw = defaults.float(forKey: "initWeight")
                 initWeightlabel.text = "\(iw) \(weightUnit)"
                 //set chart and percent
                 if iw > targetWeight {
